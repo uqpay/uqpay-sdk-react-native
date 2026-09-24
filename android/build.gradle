@@ -1,0 +1,106 @@
+buildscript {
+  // Defaults used only when the host app does not define these on rootProject.ext.
+  // Floors per AC RN-COMPAT1: minSdk 24, compileSdk 35, Kotlin 2.0+, AGP 8.6+.
+  ext.Uqpay = [
+    kotlinVersion: "2.0.21",
+    minSdkVersion: 24,
+    compileSdkVersion: 35
+  ]
+
+  ext.getExtOrDefault = { prop ->
+    if (rootProject.ext.has(prop)) {
+      return rootProject.ext.get(prop)
+    }
+
+    return Uqpay[prop]
+  }
+
+  repositories {
+    google()
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath "com.android.tools.build:gradle:8.7.2"
+    // noinspection DifferentKotlinGradleVersion
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${getExtOrDefault('kotlinVersion')}"
+  }
+}
+
+
+apply plugin: "com.android.library"
+
+if (project.extensions.findByName("kotlin") == null) {
+  apply plugin: "kotlin-android"
+}
+
+
+apply plugin: "com.facebook.react"
+
+android {
+  namespace "com.uqpay.reactnative"
+
+  compileSdkVersion getExtOrDefault("compileSdkVersion")
+
+  defaultConfig {
+    minSdkVersion getExtOrDefault("minSdkVersion")
+
+    // Keeps this package's own bridge classes; the native SDK ships its own consumer rules
+    // for its classes, so they are not repeated here (see the file's header).
+    consumerProguardFiles "proguard-rules.pro"
+  }
+
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_17
+    targetCompatibility JavaVersion.VERSION_17
+  }
+
+  // AC RN-SEC12: the bridge honours `debugLogging` only when the **host app** is
+  // debuggable (`ApplicationInfo.FLAG_DEBUGGABLE`, see `UqpayModule.hostIsDebuggable`), so
+  // a release build of the merchant's app can never turn the native logger on. That is the
+  // gate that exists — deliberately the host's flag rather than this library's own
+  // `BuildConfig.DEBUG`, which a published release AAR would hard-code to false and which
+  // says nothing about the app it is linked into. `buildConfig` stays enabled so the
+  // generated class is available if a future compile-time gate is wanted.
+  buildFeatures {
+    buildConfig true
+  }
+
+  testOptions {
+    unitTests {
+      // Robolectric needs the merged resources and the manifest (AC RN-TEST5).
+      includeAndroidResources = true
+      returnDefaultValues = true
+    }
+  }
+}
+
+kotlin {
+  compilerOptions {
+    jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+  }
+}
+
+repositories {
+  google()
+  mavenCentral()
+}
+
+dependencies {
+  implementation "com.facebook.react:react-android"
+
+  // AC RN-INT3 / RN-REL7: published native SDK from Maven Central.
+  // Moves to the patch-only range "[0.1.1, 0.2)" once 0.1.1 ships.
+  implementation "com.uqpay.sdk:uqpay-sdk-android:0.1.0"
+
+  // The registry shim (AC RN-BR1) uses androidx.activity's ActivityResultRegistry directly.
+  // The native SDK already brings 1.9.3 transitively; declared so the API we compile
+  // against is ours to see, not an accident of the dependency graph.
+  implementation "androidx.activity:activity-ktx:1.9.3"
+
+  // Bridge-contract tests (AC RN-TEST5). Plain fakes only — no mocking framework.
+  testImplementation "junit:junit:4.13.2"
+  testImplementation "org.robolectric:robolectric:4.14.1"
+  testImplementation "androidx.test:core-ktx:1.6.1"
+  testImplementation "androidx.test.ext:junit-ktx:1.2.1"
+}

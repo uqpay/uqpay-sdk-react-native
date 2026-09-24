@@ -1,0 +1,48 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "paths": {
+      "@uqpay/react-native": ["./src/index"]
+    },
+    "allowImportingTsExtensions": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "customConditions": [
+      "uqpay-react-native-source",
+      "react-native-strict-api"
+    ],
+    "esModuleInterop": true,
+    "exactOptionalPropertyTypes": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ESNext",
+    "verbatimModuleSyntax": true
+  },
+  "exclude": [
+    "node_modules",
+    "lib",
+    "example/node_modules",
+    // Self-contained Expo sample: it has its own tsconfig and its own
+    // install, so the library typecheck must not depend on it.
+    "example-expo",
+    // README snippets: compiled by `docs-fixtures/tsconfig.json`, not here.
+    "docs-fixtures",
+    "temp",
+    "coverage"
+  ]
+}

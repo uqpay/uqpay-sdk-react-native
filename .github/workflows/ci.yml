@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  merge_group:
+    types:
+      - checks_requested
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # typecheck + lint + unit tests w/ coverage + API report + docs check
+  js:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Typecheck
+        run: yarn typecheck
+      - name: Lint
+        run: yarn lint
+      - name: Unit tests with coverage gate
+        run: yarn test --coverage
+      - name: Build declarations (needed by api:check and pack-check)
+        run: yarn prepare
+      - name: API report must match the committed golden
+        run: yarn api:check
+      - name: README snippets type-check
+        run: yarn docs:check
+      - name: API reference drift
+        run: yarn docs:api:check
+      - name: Package contents check — no internal docs, example, or secrets shipped
+        run: |
+          OUT="$(npm pack --dry-run 2>&1)"
+          echo "$OUT"
+          if echo "$OUT" | grep -Eq '(^| )(docs/internal|example/|\.env$|\.env[^.]|local\.properties)'; then
+            echo "::error::npm pack would ship a forbidden path (docs/internal, example/, .env, or local.properties)"
+            exit 1
+          fi
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: Install JDK
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+      - name: Ensure Android SDK 35 platform + build-tools are installed
+        run: |
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" "build-tools;35.0.0"
+        shell: bash
+      - name: Write local.properties
+        working-directory: example/android
+        run: echo "sdk.dir=$ANDROID_HOME" > local.properties
+      - name: Create a throwaway debug keystore for the example app
+        # Keystores are never committed. These are React Native's well-known
+        # public debug values, used only to sign the example's debug build.
+        working-directory: example/android/app
+        run: keytool -genkeypair -keystore debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+      - name: Android gates — library release build, library unit tests, example debug build
+        working-directory: example/android
+        run: ./gradlew :uqpay_react-native:assembleRelease :uqpay_react-native:testDebugUnitTest :app:assembleDebug --no-daemon --console=plain
+
+  ios:
+    runs-on: macos-26
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - name: Setup
+        uses: ./.github/actions/setup
+      - name: pod install
+        working-directory: example/ios
+        run: pod install
+      - name: XCTest — library unit tests via the example's :testspecs integration
+        working-directory: example/ios
+        run: |
+          xcodebuild test \
+            -workspace ReactNativeExample.xcworkspace \
+            -scheme uqpay-react-native-Unit-Tests \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+            -configuration Debug
+      - name: Build the example app
+        working-directory: example/ios
+        run: |
+          xcodebuild \
+            -workspace ReactNativeExample.xcworkspace \
+            -scheme ReactNativeExample \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 17 Pro' \
+            -configuration Debug \
+            build

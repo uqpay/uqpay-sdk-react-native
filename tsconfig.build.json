@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig",
+  "exclude": [
+    "example",
+    "example-expo",
+    "docs-fixtures",
+    "lib",
+    "plugin",
+    "scripts",
+    "jest.setup.ts",
+    "src/**/__tests__/**"
+  ]
+}

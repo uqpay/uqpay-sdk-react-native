@@ -1,0 +1,31 @@
+{
+  "name": "@uqpay/react-native-example-expo",
+  "version": "0.0.1",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "env": "node scripts/gen-env.mjs",
+    "prestart": "node scripts/gen-env.mjs",
+    "preios": "node scripts/gen-env.mjs",
+    "preandroid": "node scripts/gen-env.mjs",
+    "preprebuild": "node scripts/gen-env.mjs",
+    "prebuild": "expo prebuild",
+    "start": "expo start --dev-client",
+    "ios": "expo run:ios",
+    "android": "expo run:android"
+  },
+  "dependencies": {
+    "@uqpay/react-native": "workspace:*",
+    "expo": "~57.0.24",
+    "react": "19.2.3",
+    "react-native": "0.86.3"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  },
+  "engines": {
+    "node": ">= 22.11.0"
+  }
+}

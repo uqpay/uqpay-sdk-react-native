@@ -1,0 +1,911 @@
+{
+  "version": 1,
+  "generatedFrom": "src/__tests__/fixtures/scenarios.ts",
+  "scenarios": [
+    {
+      "id": "success",
+      "title": "success resolves completed with the wire amount untouched",
+      "acRows": [
+        "RN-API5",
+        "RN-FLOW5",
+        "RN-PAR5"
+      ],
+      "native": {
+        "ios": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "amount": "10.00",
+          "currency": "SGD",
+          "paymentMethodType": "card",
+          "transactionId": "pa_0001",
+          "merchantOrderId": "order-7",
+          "completedAt": "2026-09-21T10:15:30.000Z",
+          "platform": "ios",
+          "resultId": "res-ios-completed"
+        },
+        "android": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "amount": "10.00",
+          "currency": "SGD",
+          "paymentMethodType": "card",
+          "transactionId": "pa_0001",
+          "merchantOrderId": "order-7",
+          "completedAt": "2026-09-21T10:15:30.000Z",
+          "platform": "android",
+          "resultId": "res-android-completed"
+        }
+      },
+      "expected": {
+        "kind": "completed",
+        "status": "SUCCEEDED",
+        "amount": "10.00"
+      }
+    },
+    {
+      "id": "requires_capture",
+      "title": "a manual-capture intent paid through the sheet still reports completed/SUCCEEDED on both platforms",
+      "acRows": [
+        "RN-FLOW10",
+        "lead OQ-A2"
+      ],
+      "native": {
+        "ios": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "amount": "10.00",
+          "currency": "SGD",
+          "paymentMethodType": "card",
+          "transactionId": "pa_0001",
+          "merchantOrderId": "order-7",
+          "completedAt": "2026-09-21T10:15:30.000Z",
+          "platform": "ios",
+          "resultId": "res-ios-completed"
+        },
+        "android": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "amount": "10.00",
+          "currency": "SGD",
+          "paymentMethodType": "card",
+          "transactionId": "pa_0001",
+          "merchantOrderId": "order-7",
+          "completedAt": "2026-09-21T10:15:30.000Z",
+          "platform": "android",
+          "resultId": "res-android-completed"
+        }
+      },
+      "expected": {
+        "kind": "completed",
+        "status": "SUCCEEDED",
+        "amount": "10.00"
+      }
+    },
+    {
+      "id": "decline",
+      "title": "a declined card resolves failed with card_declined",
+      "acRows": [
+        "RN-API5",
+        "RN-ERR1"
+      ],
+      "native": {
+        "ios": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "card_declined",
+            "developerMessage": "issuer declined",
+            "isOutcomeUnknown": false,
+            "declineCode": "do_not_honor"
+          },
+          "platform": "ios",
+          "resultId": "res-ios-card_declined"
+        },
+        "android": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "card_declined",
+            "developerMessage": "issuer declined",
+            "isOutcomeUnknown": false,
+            "declineCode": "do_not_honor"
+          },
+          "platform": "android",
+          "resultId": "res-android-card_declined"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "card_declined",
+        "isRetryable": false,
+        "isOutcomeUnknown": false,
+        "isUnknownErrorCode": false
+      }
+    },
+    {
+      "id": "insufficient_funds",
+      "title": "insufficient funds resolves failed with insufficient_funds",
+      "acRows": [
+        "RN-ERR1"
+      ],
+      "native": {
+        "ios": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "insufficient_funds",
+            "developerMessage": "issuer declined for funds",
+            "isOutcomeUnknown": false
+          },
+          "platform": "ios",
+          "resultId": "res-ios-insufficient_funds"
+        },
+        "android": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "insufficient_funds",
+            "developerMessage": "issuer declined for funds",
+            "isOutcomeUnknown": false
+          },
+          "platform": "android",
+          "resultId": "res-android-insufficient_funds"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "insufficient_funds",
+        "isRetryable": false
+      }
+    },
+    {
+      "id": "three_ds_pass",
+      "title": "a passed 3DS challenge resolves completed",
+      "acRows": [
+        "RN-FLOW6"
+      ],
+      "native": {
+        "ios": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "amount": "10.00",
+          "currency": "SGD",
+          "paymentMethodType": "card",
+          "transactionId": "pa_3ds_ok",
+          "merchantOrderId": "order-7",
+          "completedAt": "2026-09-21T10:15:30.000Z",
+          "platform": "ios",
+          "resultId": "res-ios-completed"
+        },
+        "android": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "amount": "10.00",
+          "currency": "SGD",
+          "paymentMethodType": "card",
+          "transactionId": "pa_3ds_ok",
+          "merchantOrderId": "order-7",
+          "completedAt": "2026-09-21T10:15:30.000Z",
+          "platform": "android",
+          "resultId": "res-android-completed"
+        }
+      },
+      "expected": {
+        "kind": "completed",
+        "status": "SUCCEEDED"
+      }
+    },
+    {
+      "id": "three_ds_fail",
+      "title": "a failed 3DS challenge resolves failed with 3ds_failed",
+      "acRows": [
+        "RN-FLOW6",
+        "RN-ERR1"
+      ],
+      "native": {
+        "ios": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "3ds_failed",
+            "developerMessage": "server rejected the 3DS outcome",
+            "isOutcomeUnknown": false
+          },
+          "platform": "ios",
+          "resultId": "res-ios-3ds_failed"
+        },
+        "android": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "3ds_failed",
+            "developerMessage": "server rejected the 3DS outcome",
+            "isOutcomeUnknown": false
+          },
+          "platform": "android",
+          "resultId": "res-android-3ds_failed"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "3ds_failed",
+        "isUnknownErrorCode": false
+      }
+    },
+    {
+      "id": "user_cancel",
+      "title": "the customer cancelling resolves canceled with user_cancelled",
+      "acRows": [
+        "RN-FLOW7"
+      ],
+      "native": {
+        "ios": {
+          "kind": "canceled",
+          "paymentIntentId": "pi_matrix_0001",
+          "reason": "user_cancelled",
+          "platform": "ios",
+          "resultId": "res-ios-user_cancelled"
+        },
+        "android": {
+          "kind": "canceled",
+          "paymentIntentId": "pi_matrix_0001",
+          "reason": "user_cancelled",
+          "platform": "android",
+          "resultId": "res-android-user_cancelled"
+        }
+      },
+      "expected": {
+        "kind": "canceled",
+        "cancelReason": "user_cancelled"
+      }
+    },
+    {
+      "id": "sheet_dismiss",
+      "title": "dismissing the sheet before any attempt resolves canceled with user_cancelled",
+      "acRows": [
+        "RN-FLOW7",
+        "RN-UX9"
+      ],
+      "native": {
+        "ios": {
+          "kind": "canceled",
+          "paymentIntentId": "pi_matrix_0001",
+          "reason": "user_cancelled",
+          "platform": "ios",
+          "resultId": "res-ios-user_cancelled"
+        },
+        "android": {
+          "kind": "canceled",
+          "paymentIntentId": "pi_matrix_0001",
+          "reason": "user_cancelled",
+          "platform": "android",
+          "resultId": "res-android-user_cancelled"
+        }
+      },
+      "expected": {
+        "kind": "canceled",
+        "cancelReason": "user_cancelled"
+      }
+    },
+    {
+      "id": "merchant_cancel",
+      "title": "cancelPaymentSheet with nothing in flight resolves canceled with merchant_cancelled",
+      "acRows": [
+        "RN-FLOW7",
+        "RN-UX6"
+      ],
+      "native": {
+        "ios": {
+          "kind": "canceled",
+          "paymentIntentId": "pi_matrix_0001",
+          "reason": "merchant_cancelled",
+          "platform": "ios",
+          "resultId": "res-ios-merchant_cancelled"
+        },
+        "android": {
+          "kind": "canceled",
+          "paymentIntentId": "pi_matrix_0001",
+          "reason": "merchant_cancelled",
+          "platform": "android",
+          "resultId": "res-android-merchant_cancelled"
+        }
+      },
+      "expected": {
+        "kind": "canceled",
+        "cancelReason": "merchant_cancelled"
+      }
+    },
+    {
+      "id": "dismiss_mid_confirm",
+      "title": "dismissing mid-confirm resolves pending with no amount, never canceled",
+      "acRows": [
+        "RN-FLOW5",
+        "RN-FLOW7",
+        "RN-UX6"
+      ],
+      "native": {
+        "ios": {
+          "kind": "pending",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "timeout",
+            "developerMessage": "the confirm left the device without an answer",
+            "isOutcomeUnknown": true
+          },
+          "platform": "ios",
+          "resultId": "res-ios-pending"
+        },
+        "android": {
+          "kind": "pending",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "timeout",
+            "developerMessage": "the confirm left the device without an answer",
+            "isOutcomeUnknown": true
+          },
+          "platform": "android",
+          "resultId": "res-android-pending"
+        }
+      },
+      "expected": {
+        "kind": "pending",
+        "errorCode": "timeout",
+        "amount": null,
+        "isOutcomeUnknown": true,
+        "isRetryable": false
+      }
+    },
+    {
+      "id": "network_timeout",
+      "title": "a network timeout resolves pending with cause timeout and isOutcomeUnknown",
+      "acRows": [
+        "RN-ERR4",
+        "RN-CB7"
+      ],
+      "native": {
+        "ios": {
+          "kind": "pending",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "timeout",
+            "developerMessage": "the confirm left the device without an answer",
+            "isOutcomeUnknown": true
+          },
+          "platform": "ios",
+          "resultId": "res-ios-pending"
+        },
+        "android": {
+          "kind": "pending",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "timeout",
+            "developerMessage": "the confirm left the device without an answer",
+            "isOutcomeUnknown": true
+          },
+          "platform": "android",
+          "resultId": "res-android-pending"
+        }
+      },
+      "expected": {
+        "kind": "pending",
+        "errorCode": "timeout",
+        "isOutcomeUnknown": true,
+        "isRetryable": false
+      }
+    },
+    {
+      "id": "network_error",
+      "title": "a transport failure before the request resolves failed with network_error",
+      "acRows": [
+        "RN-ERR4"
+      ],
+      "native": {
+        "ios": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "network_error",
+            "developerMessage": "could not reach the gateway",
+            "isOutcomeUnknown": false
+          },
+          "platform": "ios",
+          "resultId": "res-ios-network_error"
+        },
+        "android": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "network_error",
+            "developerMessage": "could not reach the gateway",
+            "isOutcomeUnknown": false
+          },
+          "platform": "android",
+          "resultId": "res-android-network_error"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "network_error",
+        "isRetryable": true
+      }
+    },
+    {
+      "id": "server_5xx_load",
+      "title": "a 5xx while loading the intent resolves failed with server_error",
+      "acRows": [
+        "RN-ERR4",
+        "spikes S2-2"
+      ],
+      "native": {
+        "ios": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "server_error",
+            "developerMessage": "GET intent returned 503",
+            "isOutcomeUnknown": false,
+            "httpStatus": 503
+          },
+          "platform": "ios",
+          "resultId": "res-ios-server_error"
+        },
+        "android": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "server_error",
+            "developerMessage": "GET intent returned 503",
+            "isOutcomeUnknown": false,
+            "httpStatus": 503
+          },
+          "platform": "android",
+          "resultId": "res-android-server_error"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "server_error",
+        "isRetryable": true,
+        "isOutcomeUnknown": false
+      }
+    },
+    {
+      "id": "server_5xx_confirm",
+      "title": "a 5xx on the confirm path resolves pending with cause timeout",
+      "acRows": [
+        "RN-ERR4",
+        "spikes S2-2"
+      ],
+      "native": {
+        "ios": {
+          "kind": "pending",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "timeout",
+            "developerMessage": "the confirm left the device without an answer",
+            "isOutcomeUnknown": true
+          },
+          "platform": "ios",
+          "resultId": "res-ios-pending"
+        },
+        "android": {
+          "kind": "pending",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "timeout",
+            "developerMessage": "the confirm left the device without an answer",
+            "isOutcomeUnknown": true
+          },
+          "platform": "android",
+          "resultId": "res-android-pending"
+        }
+      },
+      "expected": {
+        "kind": "pending",
+        "errorCode": "timeout",
+        "isOutcomeUnknown": true,
+        "isRetryable": false
+      }
+    },
+    {
+      "id": "invalid_request_400",
+      "title": "a 400/404/422 resolves failed with invalid_request",
+      "acRows": [
+        "RN-ERR1",
+        "spikes S2-1"
+      ],
+      "native": {
+        "ios": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "invalid_request",
+            "developerMessage": "gateway rejected the intent",
+            "isOutcomeUnknown": false,
+            "httpStatus": 422
+          },
+          "platform": "ios",
+          "resultId": "res-ios-invalid_request"
+        },
+        "android": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "invalid_request",
+            "developerMessage": "gateway rejected the intent",
+            "isOutcomeUnknown": false,
+            "httpStatus": 422
+          },
+          "platform": "android",
+          "resultId": "res-android-invalid_request"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "invalid_request",
+        "isRetryable": false
+      }
+    },
+    {
+      "id": "malformed_payload",
+      "title": "a malformed native payload resolves failed with unknown, never completed",
+      "acRows": [
+        "RN-ERR5",
+        "RN-API3"
+      ],
+      "native": {
+        "ios": {
+          "kind": "not-a-kind",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "amount": "10.00",
+          "currency": "SGD",
+          "paymentMethodType": "card",
+          "transactionId": "pa_0001",
+          "merchantOrderId": "order-7",
+          "completedAt": "2026-09-21T10:15:30.000Z",
+          "platform": "ios",
+          "resultId": "res-ios-completed"
+        },
+        "android": {
+          "kind": "not-a-kind",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "amount": "10.00",
+          "currency": "SGD",
+          "paymentMethodType": "card",
+          "transactionId": "pa_0001",
+          "merchantOrderId": "order-7",
+          "completedAt": "2026-09-21T10:15:30.000Z",
+          "platform": "android",
+          "resultId": "res-android-completed"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "unknown",
+        "isUnknownErrorCode": true,
+        "raw": "not-a-kind"
+      }
+    },
+    {
+      "id": "unknown_error_code",
+      "title": "an unrecognised error code round-trips with raw preserved",
+      "acRows": [
+        "RN-API3",
+        "RN-ERR5"
+      ],
+      "native": {
+        "ios": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "quantum_flux",
+            "developerMessage": "native SDK reported quantum_flux",
+            "isOutcomeUnknown": false
+          },
+          "platform": "ios",
+          "resultId": "res-ios-quantum_flux"
+        },
+        "android": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "quantum_flux",
+            "developerMessage": "native SDK reported quantum_flux",
+            "isOutcomeUnknown": false
+          },
+          "platform": "android",
+          "resultId": "res-android-quantum_flux"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "quantum_flux",
+        "isUnknownErrorCode": true,
+        "isRetryable": false,
+        "raw": "quantum_flux"
+      }
+    },
+    {
+      "id": "no_activity_or_vc",
+      "title": "no foreground Activity / presenting VC resolves failed with invalid_configuration",
+      "acRows": [
+        "RN-CB8"
+      ],
+      "native": {
+        "ios": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "invalid_configuration",
+            "developerMessage": "no presenting view controller",
+            "isOutcomeUnknown": false
+          },
+          "platform": "ios",
+          "resultId": "res-ios-invalid_configuration"
+        },
+        "android": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "invalid_configuration",
+            "developerMessage": "no foreground Activity",
+            "isOutcomeUnknown": false
+          },
+          "platform": "android",
+          "resultId": "res-android-invalid_configuration"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "invalid_configuration",
+        "isRetryable": false,
+        "isUnknownErrorCode": false
+      }
+    },
+    {
+      "id": "token_provider_failure",
+      "title": "a token-provider failure resolves failed with authentication_failed",
+      "acRows": [
+        "RN-ERR8"
+      ],
+      "native": {
+        "ios": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "authentication_failed",
+            "developerMessage": "tokenProvider did not supply a token",
+            "isOutcomeUnknown": false
+          },
+          "platform": "ios",
+          "resultId": "res-ios-authentication_failed"
+        },
+        "android": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "authentication_failed",
+            "developerMessage": "tokenProvider did not supply a token",
+            "isOutcomeUnknown": false
+          },
+          "platform": "android",
+          "resultId": "res-android-authentication_failed"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "authentication_failed",
+        "isRetryable": true
+      }
+    },
+    {
+      "id": "terminal_succeeded",
+      "title": "the terminal-intent guard resolves completed for an already SUCCEEDED intent",
+      "acRows": [
+        "RN-FLOW2"
+      ],
+      "native": {
+        "ios": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "platform": "ios",
+          "resultId": "res-ios-terminal-succeeded"
+        },
+        "android": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "platform": "android",
+          "resultId": "res-android-terminal-succeeded"
+        }
+      },
+      "expected": {
+        "kind": "completed",
+        "status": "SUCCEEDED",
+        "amount": null
+      }
+    },
+    {
+      "id": "terminal_guard_requires_capture",
+      "title": "the terminal-intent guard resolves completed with REQUIRES_CAPTURE and nothing else",
+      "acRows": [
+        "RN-FLOW2",
+        "RN-FLOW10",
+        "lead OQ-A2"
+      ],
+      "native": {
+        "ios": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "REQUIRES_CAPTURE",
+          "platform": "ios",
+          "resultId": "res-ios-terminal-requires-capture"
+        },
+        "android": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "REQUIRES_CAPTURE",
+          "platform": "android",
+          "resultId": "res-android-terminal-requires-capture"
+        }
+      },
+      "expected": {
+        "kind": "completed",
+        "status": "REQUIRES_CAPTURE",
+        "amount": null
+      }
+    },
+    {
+      "id": "terminal_failed",
+      "title": "the terminal-intent guard resolves failed with intent_not_payable for a FAILED intent",
+      "acRows": [
+        "RN-FLOW2"
+      ],
+      "native": {
+        "ios": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "intent_not_payable",
+            "developerMessage": "intent status FAILED",
+            "isOutcomeUnknown": false
+          },
+          "platform": "ios",
+          "resultId": "res-ios-intent_not_payable"
+        },
+        "android": {
+          "kind": "failed",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "intent_not_payable",
+            "developerMessage": "intent status FAILED",
+            "isOutcomeUnknown": false
+          },
+          "platform": "android",
+          "resultId": "res-android-intent_not_payable"
+        }
+      },
+      "expected": {
+        "kind": "failed",
+        "errorCode": "intent_not_payable",
+        "isRetryable": false
+      }
+    },
+    {
+      "id": "terminal_cancelled",
+      "title": "the terminal-intent guard resolves canceled with intent_cancelled for a CANCELLED intent",
+      "acRows": [
+        "RN-FLOW2",
+        "RN-PAR1"
+      ],
+      "native": {
+        "ios": {
+          "kind": "canceled",
+          "paymentIntentId": "pi_matrix_0001",
+          "reason": "intent_cancelled",
+          "platform": "ios",
+          "resultId": "res-ios-intent_cancelled"
+        },
+        "android": {
+          "kind": "canceled",
+          "paymentIntentId": "pi_matrix_0001",
+          "reason": "intent_cancelled",
+          "platform": "android",
+          "resultId": "res-android-intent_cancelled"
+        }
+      },
+      "expected": {
+        "kind": "canceled",
+        "cancelReason": "intent_cancelled"
+      }
+    },
+    {
+      "id": "qr_expiry",
+      "title": "QR expiry resolves pending with cause timeout",
+      "acRows": [
+        "RN-FLOW9"
+      ],
+      "native": {
+        "ios": {
+          "kind": "pending",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "timeout",
+            "developerMessage": "the confirm left the device without an answer",
+            "isOutcomeUnknown": true
+          },
+          "platform": "ios",
+          "resultId": "res-ios-pending",
+          "paymentMethodType": "grabpay"
+        },
+        "android": {
+          "kind": "pending",
+          "paymentIntentId": "pi_matrix_0001",
+          "error": {
+            "code": "timeout",
+            "developerMessage": "the confirm left the device without an answer",
+            "isOutcomeUnknown": true
+          },
+          "platform": "android",
+          "resultId": "res-android-pending",
+          "paymentMethodType": "grabpay"
+        }
+      },
+      "expected": {
+        "kind": "pending",
+        "errorCode": "timeout",
+        "isOutcomeUnknown": true
+      }
+    },
+    {
+      "id": "wallet_success",
+      "title": "a wallet payment resolves completed with the confirmed method",
+      "acRows": [
+        "RN-FLOW8",
+        "RN-PAR2"
+      ],
+      "native": {
+        "ios": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "amount": "1000",
+          "currency": "JPY",
+          "paymentMethodType": "grabpay",
+          "transactionId": "pa_0001",
+          "merchantOrderId": "order-7",
+          "completedAt": "2026-09-21T10:15:30.000Z",
+          "platform": "ios",
+          "resultId": "res-ios-completed"
+        },
+        "android": {
+          "kind": "completed",
+          "paymentIntentId": "pi_matrix_0001",
+          "status": "SUCCEEDED",
+          "amount": "1000",
+          "currency": "JPY",
+          "paymentMethodType": "grabpay",
+          "transactionId": "pa_0001",
+          "merchantOrderId": "order-7",
+          "completedAt": "2026-09-21T10:15:30.000Z",
+          "platform": "android",
+          "resultId": "res-android-completed"
+        }
+      },
+      "expected": {
+        "kind": "completed",
+        "status": "SUCCEEDED",
+        "amount": "1000"
+      }
+    }
+  ]
+}
