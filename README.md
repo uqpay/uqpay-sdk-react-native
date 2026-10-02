@@ -17,7 +17,7 @@ polling, idempotency) runs inside the native SDKs, so **no card data ever
 reaches your JavaScript**.
 
 > [!IMPORTANT]
-> **Release candidate: `1.0.0-rc.1`. Not yet published to npm, and not yet
+> **Release candidate: `1.0.0-rc.2`. Not yet published to npm, and not yet
 > tested with live payments.** The API on this page is the 1.0.0 contract and is
 > frozen in [`etc/uqpay-react-native.api.md`](https://github.com/uqpay/uqpay-sdk-react-native/blob/main/etc/uqpay-react-native.api.md), but
 > versions, native pins and platform floors can still move before 1.0.0.
@@ -145,7 +145,7 @@ not resolve. Install the release-candidate tarball attached to the GitHub
 Release instead:
 
 ```sh
-npm install https://github.com/uqpay/uqpay-sdk-react-native/releases/download/v1.0.0-rc.1/uqpay-react-native-1.0.0-rc.1.tgz
+npm install https://github.com/uqpay/uqpay-sdk-react-native/releases/download/v1.0.0-rc.2/uqpay-react-native-1.0.0-rc.2.tgz
 cd ios && pod install
 ```
 

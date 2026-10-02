@@ -9,7 +9,21 @@ breaking change is defined in [STABILITY.md](STABILITY.md).
 
 ## [Unreleased]
 
-First release candidate: `1.0.0-rc.1` (2026-09-24). Pre-release — test in sandbox before taking live payments.
+Second release candidate: `1.0.0-rc.2` (2026-10-02). Pre-release — test in
+sandbox before taking live payments. Supersedes `1.0.0-rc.1` (2026-09-24).
+
+### Fixed in rc.2
+
+- Android: `tokenProvider` is now called before **every** present, as on iOS
+  and as documented. Previously a cached token that had not yet expired was
+  reused without asking JavaScript, so after your backend minted a new token
+  (a restart, a deploy, a second instance — UQPAY keeps one active token per
+  merchant) every Android payment failed with `authentication_failed` until
+  the cached token aged out. If `tokenProvider` throws or times out, Android
+  falls back to a cached token that is still outside the refresh margin, so a
+  backend that is briefly down does not fail a payment a live token can still
+  make; with no such token the present settles as `authentication_failed`
+  immediately instead of showing a spinner.
 
 **Native versions:** iOS `UqpaySDKiOS` 1.1.0 (`~> 1.1.0`) · Android
 `com.uqpay.sdk:uqpay-sdk-android` 0.1.0 (exact pin; moves to a patch range once

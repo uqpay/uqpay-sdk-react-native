@@ -1,6 +1,6 @@
 {
   "name": "@uqpay/react-native",
-  "version": "1.0.0-rc.1",
+  "version": "1.0.0-rc.2",
   "description": "UQPAY payment sheet for React Native (wraps the native iOS and Android SDKs)",
   "main": "./lib/commonjs/index.js",
   "types": "./lib/typescript/commonjs/src/index.d.ts",
