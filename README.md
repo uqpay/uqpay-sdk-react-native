@@ -17,8 +17,8 @@ polling, idempotency) runs inside the native SDKs, so **no card data ever
 reaches your JavaScript**.
 
 > [!IMPORTANT]
-> **Release candidate: `1.0.0-rc.2`. Not yet published to npm, and not yet
-> tested with live payments.** The API on this page is the 1.0.0 contract and is
+> **Release candidate: `1.0.0-rc.2`, published to npm under the `next` tag.
+> Not yet tested with live payments.** The API on this page is the 1.0.0 contract and is
 > frozen in [`etc/uqpay-react-native.api.md`](https://github.com/uqpay/uqpay-sdk-react-native/blob/main/etc/uqpay-react-native.api.md), but
 > versions, native pins and platform floors can still move before 1.0.0.
 > Integrate and test in **sandbox**; read
@@ -140,13 +140,20 @@ nothing.
 
 ### Installing a release candidate
 
-Until the package is published to npm, `npm install @uqpay/react-native` will
-not resolve. Install the release-candidate tarball attached to the GitHub
-Release instead:
+Release candidates are published to npm under the `next` dist-tag, so a plain
+`npm install @uqpay/react-native` does not resolve until 1.0.0. Install the
+current candidate explicitly:
+
+```sh
+npm install @uqpay/react-native@next
+cd ios && pod install
+```
+
+The same package is attached to the [GitHub Release](https://github.com/uqpay/uqpay-sdk-react-native/releases/tag/v1.0.0-rc.2)
+as a tarball with its checksum, if you prefer to install from a file:
 
 ```sh
 npm install https://github.com/uqpay/uqpay-sdk-react-native/releases/download/v1.0.0-rc.2/uqpay-react-native-1.0.0-rc.2.tgz
-cd ios && pod install
 ```
 
 **Expo apps:** install the tarball the same way — `npm install <url-or-path>`
