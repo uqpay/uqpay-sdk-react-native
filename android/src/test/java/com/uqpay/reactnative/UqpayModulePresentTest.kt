@@ -42,8 +42,9 @@ class UqpayModulePresentTest {
     reactContext = TestReactContext(context)
     module = UqpayModule(reactContext)
     module.initialize(UqpayTest.initConfig(configId = "cfg-present"), FakePromise())
-    // A live token, so the pre-launch token fetch is a no-op and these tests exercise the
-    // launch itself. The tests that need the fetch to run clear it.
+    // A live token, so the pre-launch token fetch (which finds no JS listener here) falls
+    // back to it and these tests exercise the launch itself. The tests that need the fetch
+    // to run clear it.
     UqpayNativeState.cachedToken = CachedToken("test-token", UqpayRuntime.now() + 1_800_000L)
   }
 

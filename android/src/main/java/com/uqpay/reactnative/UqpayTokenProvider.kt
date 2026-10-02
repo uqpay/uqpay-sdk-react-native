@@ -61,24 +61,38 @@ internal class UqpayTokenProvider(
    * So `presentPaymentSheet` calls this off the JS thread while the host is still in front,
    * and the fetch inside the sheet is then answered from [primed] without waking JS at all.
    *
-   * It reports whether the sheet can be launched at all. A failure here — the provider
-   * threw, returned a blank token, timed out, or no JavaScript listener appeared — would
-   * only repeat itself inside the sheet, where JS is even less able to answer, and end
-   * 10 s later as `authentication_failed` with the customer staring at a spinner. So the
-   * caller settles the present with that same code straight away and launches nothing.
+   * It asks JavaScript on **every** present, even with a cached token that looks valid —
+   * the README's "called before every present", and what iOS does. UQPAY keeps one active
+   * token per merchant, so any mint on the merchant's server (a restart or deploy, a second
+   * instance, or its own early refresh racing this device's clock) silently kills the token
+   * cached here. Served from the cache, that dead token failed every Android payment with
+   * `authentication_failed` until it aged out — and the SDK's retry after the `401` could not
+   * help, because [fetchToken] answers it from the same cache. This is the one moment a
+   * fresh token can still be had: the host is in front and JS can answer.
+   *
+   * It reports whether the sheet can be launched at all. When JavaScript cannot supply a
+   * token — the provider threw, returned a blank token, timed out, or no listener appeared —
+   * a cached token that is still outside the refresh margin is used instead: it may well
+   * still be live (a merchant backend that is briefly down has not re-minted), and if it is
+   * not, the gateway's `401` ends the payment with the same `authentication_failed`. With no
+   * such token, a failure here would only repeat itself inside the sheet, where JS is even
+   * less able to answer, and end 10 s later as `authentication_failed` with the customer
+   * staring at a spinner. So the caller settles the present with that same code straight
+   * away and launches nothing.
    */
   fun primeForPresent(): PrimeOutcome {
     primed = null
     val cached = state.cachedToken
-    val now = UqpayRuntime.now()
-    if (cached != null && now < cached.expiresAtEpochMs - UqpayRuntime.TOKEN_CACHE_MARGIN_MS) {
-      return PrimeOutcome.Ready
-    }
     return try {
       primed = requestFromJavaScript(cached)
       PrimeOutcome.Ready
     } catch (e: Exception) {
-      PrimeOutcome.Failed(e.message ?: "UQPAY: the app's `tokenProvider` did not supply a token.")
+      val now = UqpayRuntime.now()
+      if (cached != null && now < cached.expiresAtEpochMs - UqpayRuntime.TOKEN_CACHE_MARGIN_MS) {
+        PrimeOutcome.Ready
+      } else {
+        PrimeOutcome.Failed(e.message ?: "UQPAY: the app's `tokenProvider` did not supply a token.")
+      }
     }
   }
 

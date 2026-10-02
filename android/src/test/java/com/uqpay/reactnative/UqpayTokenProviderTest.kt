@@ -323,15 +323,50 @@ class UqpayTokenProviderTest {
     assertTrue((outcome as PrimeOutcome.Failed).developerMessage.contains("no JavaScript listener"))
   }
 
+  /**
+   * Live 2026-09-25 (Android emulator): the merchant backend re-minted (restart), which kills
+   * every older token — one active token per merchant. Served from the cache, the dead token
+   * failed every present with `authentication_failed`, and the tokenProvider was never asked.
+   */
   @Test
-  fun primeForPresent_withAValidCachedToken_doesNotAskJavaScript() {
+  fun primeForPresent_withAValidLookingCachedToken_stillAsksJavaScriptForAFreshOne() {
+    UqpayNativeState.addListener()
+    UqpayNativeState.cachedToken = CachedToken("killed-by-a-server-remint", UqpayRuntime.now() + 600_000L)
+
+    val priming = executor.submit<PrimeOutcome> { provider.primeForPresent() }
+    provider.provide(awaitRequestId(), "fresh-token", UqpayRuntime.now() + 1_800_000L)
+
+    assertEquals(PrimeOutcome.Ready, priming.get(5, TimeUnit.SECONDS))
+    assertEquals("refresh", (emitted.first().second as JavaOnlyMap).getString("reason"))
+    assertEquals("the sheet must start with the fresh token", "fresh-token", provider.fetchToken().value)
+    assertEquals("fresh-token", UqpayNativeState.cachedToken?.value)
+  }
+
+  @Test
+  fun primeForPresent_whenJavaScriptFails_fallsBackToAValidCachedToken() {
     UqpayNativeState.addListener()
     UqpayNativeState.cachedToken = CachedToken("cached-token", UqpayRuntime.now() + 600_000L)
 
-    provider.primeForPresent()
+    val priming = executor.submit<PrimeOutcome> { provider.primeForPresent() }
+    provider.fail(awaitRequestId(), "the merchant backend returned 503")
 
-    assertTrue("a live cached token is enough (AC RN-BR6)", emitted.isEmpty())
+    assertEquals(
+      "a backend that is briefly down must not fail a payment a live token can still make",
+      PrimeOutcome.Ready,
+      priming.get(5, TimeUnit.SECONDS),
+    )
     assertEquals("cached-token", provider.fetchToken().value)
+  }
+
+  @Test
+  fun primeForPresent_whenJavaScriptFails_doesNotFallBackToATokenInsideTheMargin() {
+    UqpayNativeState.addListener()
+    UqpayNativeState.cachedToken = CachedToken("nearly-expired", UqpayRuntime.now() + 60_000L)
+
+    val priming = executor.submit<PrimeOutcome> { provider.primeForPresent() }
+    provider.fail(awaitRequestId(), "the merchant backend returned 503")
+
+    assertTrue(priming.get(5, TimeUnit.SECONDS) is PrimeOutcome.Failed)
   }
 
   @Test
